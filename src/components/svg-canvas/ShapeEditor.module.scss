@@ -1,0 +1,20 @@
+.shapeEditor {
+    width: 180px;
+
+    .editorRow {
+        display: block;
+
+        &:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-size: 16px;
+            font-width: bold;
+        }
+
+        label, div {
+            display: block;
+        }
+    }
+}

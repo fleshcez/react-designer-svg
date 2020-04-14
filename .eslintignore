@@ -1,0 +1,4 @@
+**/*.css
+**/*.module.scss
+**/*.html
+node_modules/*

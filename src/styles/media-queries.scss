@@ -1,0 +1,14 @@
+$smallScreenMaxWidth: 600px;
+$largeScreenMinWidth: 601px;
+
+@mixin small_screen {
+    @media only screen and (max-width: $smallScreenMaxWidth) {
+        @content;
+    }
+}
+
+@mixin large_screen {
+    @media only screen and (min-width: $largeScreenMinWidth) {
+        @content;
+    }
+}
