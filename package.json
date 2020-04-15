@@ -6,6 +6,7 @@
     "scripts": {
         "test": "npx jest",
         "setup": "npm install --no-save",
+        "build": "node build.js",
         "start": "webpack-dev-server --config webpack.development.config.js"
     },
     "husky": {
