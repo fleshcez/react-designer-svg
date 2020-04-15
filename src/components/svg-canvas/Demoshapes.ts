@@ -1,40 +1,89 @@
 import { generateUUID } from "../utils/uuid";
-import { EllipseSVGElement, RectSVGElement, svgType, SVGElementInterface } from "./SVGElement";
+import { EllipseSVGElement, ImportedSVGElement, RectSVGElement, SVGElementInterface, svgType } from "./SVGElement";
+import { importedSVG } from "../utils/SVGImporter";
 
 export const demoShapes: SVGElementInterface[] = [
     {
         id: generateUUID(),
         type: svgType.rect,
-        width: 100,
-        height: 100,
-        fill: "red",
-        rotation: 45,
+        width: 450,
+        height: 450,
+        fill: "#40dcff",
+        rotation: 0,
         position: {
-            x: 64,
-            y: 72
-        }
-    } as RectSVGElement,
-    {
-        id: generateUUID(),
-        type: svgType.rect,
-        width: 50,
-        height: 400,
-        fill: "blue",
-        position: {
-            x: 287,
-            y: 13
+            x: 0,
+            y: 0
         }
     } as RectSVGElement,
     {
         id: generateUUID(),
         type: svgType.ellipse,
         position: {
-            x: 210,
-            y: 206
+            x: 206,
+            y: 120
         },
         rotation: 25,
-        rx: 60,
-        ry: 60,
-        fill: "green"
-    } as EllipseSVGElement
+        rx: 100,
+        ry: 100,
+        fill: "#ffff00"
+    } as EllipseSVGElement,
+    {
+        id: generateUUID(),
+        type: svgType.rect,
+        width: 300,
+        height: 300,
+        fill: "#adad9a",
+        rotation: 45,
+        position: {
+            x: 54,
+            y: 287
+        }
+    } as RectSVGElement,
+    {
+        id: generateUUID(),
+        type: svgType.rect,
+        width: 50,
+        height: 50,
+        fill: "#ffffff",
+        rotation: 45,
+        position: {
+            x: 179,
+            y: 235
+        }
+    } as RectSVGElement,
+    {
+        id: generateUUID(),
+        type: svgType.rect,
+        width: 25,
+        height: 25,
+        fill: "#ffffff",
+        rotation: 45,
+        position: {
+            x: 215,
+            y: 253
+        }
+    } as RectSVGElement,
+    {
+        id: generateUUID(),
+        type: svgType.rect,
+        width: 25,
+        height: 25,
+        fill: "#ffffff",
+        rotation: 45,
+        position: {
+            x: 166,
+            y: 255
+        }
+    } as RectSVGElement,
+    {
+        id: generateUUID(),
+        type: svgType.imported,
+        position: {
+            x: 149,
+            y: 91
+        },
+        svg: importedSVG.rider,
+        width: 100,
+        height: 200
+    } as ImportedSVGElement
 ];

@@ -14,6 +14,10 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.svg$/,
+                use: ["@svgr/webpack"]
+            },
+            {
                 test: /\.ts(x?)$/,
                 use: [
                     {
@@ -62,7 +66,7 @@ module.exports = {
     devtool: "source-map",
 
     devServer: {
-        port: 3000,
+        port: 3001,
         open: true
     },
 

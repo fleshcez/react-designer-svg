@@ -1,7 +1,6 @@
 import React, { MouseEvent, MutableRefObject, useEffect, useRef, useState } from "react";
 import { SVGElement, SVGElementInterface, svgType } from "./SVGElement";
 import { Position } from "./common";
-
 import clsx from "clsx";
 
 import styles from "./SVGCanvas.module.scss";
@@ -91,7 +90,7 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
                 return s;
             }
 
-            if (s.type === svgType.rect) {
+            if (s.type === svgType.rect || s.type === svgType.imported) {
                 return { ...s, rotation: val.rotation, width: val.width, height: val.height };
             }
             return { ...s, rotation: val.rotation, rx: val.rx, ry: val.ry };
@@ -149,8 +148,9 @@ export function SVGCanvas(props: SVGCanvasProps) {
                 )}
             </div>
             <svg
-                width={width}
-                height={height}
+                width={`${width}px`}
+                height={`${height}px`}
+                viewBox={`0 0 ${width} ${height}`}
                 className={cls}
                 ref={ref}
                 onMouseUp={() => setState({ ...state, hoveredOnShapeShapeId: null })}

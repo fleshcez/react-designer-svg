@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Position } from "./common";
+import { importedSVG, SVGImporter } from "../utils/SVGImporter";
 
 export enum svgType {
     rect = "rect",
-    ellipse = "ellipse"
+    ellipse = "ellipse",
+    imported = "imported"
 }
 
 export interface SVGElementInterface {
@@ -14,16 +16,24 @@ export interface SVGElementInterface {
     rotation?: number;
 }
 
-export interface RectSVGElement extends SVGElementInterface {
-    type: svgType.rect;
+export interface WidthHeightSizeable {
     width: number;
     height: number;
+}
+
+export interface RectSVGElement extends SVGElementInterface, WidthHeightSizeable {
+    type: svgType.rect;
 }
 
 export interface EllipseSVGElement extends SVGElementInterface {
     type: svgType.ellipse;
     rx: number;
     ry: number;
+}
+
+export interface ImportedSVGElement extends SVGElementInterface, WidthHeightSizeable {
+    type: svgType.imported;
+    svg: importedSVG;
 }
 
 interface SVGElementProps {
@@ -56,7 +66,7 @@ export function SVGElement(props: SVGElementProps) {
     const { strokeWidth, setShowDragable } = useSVGElement();
 
     switch (type) {
-        case svgType.rect:
+        case svgType.rect: {
             const { width, height } = props.element as RectSVGElement;
             return (
                 <rect
@@ -77,7 +87,9 @@ export function SVGElement(props: SVGElementProps) {
                     }}
                 />
             );
-        case svgType.ellipse:
+        }
+
+        case svgType.ellipse: {
             const { rx, ry } = props.element as EllipseSVGElement;
             return (
                 <ellipse
@@ -98,5 +110,29 @@ export function SVGElement(props: SVGElementProps) {
                     }}
                 />
             );
+        }
+
+        case svgType.imported: {
+            const { width, height, svg } = props.element as ImportedSVGElement;
+
+            return (
+                <g
+                    stroke={"rgb(0,0,0)"}
+                    strokeWidth={strokeWidth}
+                    onMouseEnter={() => setShowDragable(true)}
+                    onMouseLeave={() => setShowDragable(false)}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onMouseClickCallback(id);
+                    }}
+                    transform={`translate(${position.x} ${position.y}) rotate(${rotation} ${width / 2} ${height / 2})`}
+                    onMouseDown={(event) => {
+                        onMouseDownCallback(event, id);
+                    }}
+                >
+                    <SVGImporter type={svg} dimensions={{ width, height }} />
+                </g>
+            );
+        }
     }
 }
