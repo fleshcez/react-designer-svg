@@ -1,0 +1,26 @@
+.canvasSettings {
+    width: 180px;
+    border: 1px solid;
+    float: left;
+    text-align: center;
+    padding: 10px;
+    margin-right: 10px;
+
+    .editorRow {
+        display: block;
+
+        &:not(:last-child) {
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-size: 16px;
+            font-width: bold;
+        }
+
+        label,
+        div {
+            display: block;
+        }
+    }
+}
