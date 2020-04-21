@@ -24,7 +24,6 @@ export function SVGImporter(props: SVGImporterProps) {
         case importedSVG.rider:
             return <image width={dimensions.width} height={dimensions.height} href={Rider} />;
         case importedSVG.qrCode:
-            1;
             return <image width={dimensions.width} height={dimensions.height} href={QRCode} />;
         case importedSVG.target:
             return <image width={dimensions.width} height={dimensions.height} href={Target} />;
