@@ -1,0 +1,14 @@
+.toolbox {
+    position: fixed;
+    display: block;
+    left: 0;
+    border: 1px solid;
+    top: 0;
+    bottom: 0;
+    padding: 10px;
+
+    .listElement {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
