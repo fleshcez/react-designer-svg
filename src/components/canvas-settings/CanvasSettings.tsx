@@ -19,7 +19,7 @@ export const CanvasSettings: FunctionComponent<CanvasSettingsProps> = (props: Ca
                 <label>
                     Width:
                     <input
-                        type="text"
+                        type="number"
                         name="width"
                         value={currentDimensions.width}
                         onChange={(e) => {
