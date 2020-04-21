@@ -22,7 +22,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(png|jpe?g|gif)$/i,
+                test: /\.(png|jpe?g|gif|svg)$/i,
                 use: [
                     {
                         loader: "file-loader"
@@ -62,7 +62,7 @@ module.exports = {
     devtool: "source-map",
 
     devServer: {
-        port: 3000,
+        port: 3001,
         open: true
     },
 
