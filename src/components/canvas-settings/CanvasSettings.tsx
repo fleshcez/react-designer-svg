@@ -33,7 +33,7 @@ export const CanvasSettings: FunctionComponent<CanvasSettingsProps> = (props: Ca
                 <label>
                     Height:
                     <input
-                        type="text"
+                        type="number"
                         name="height"
                         value={currentDimensions.height}
                         onChange={(e) => {
