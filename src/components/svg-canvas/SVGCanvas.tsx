@@ -42,6 +42,10 @@ interface CanvasState {
     lastMouseCoords: Position;
 }
 
+function sortShapesByZIndex(shapes: SVGElementInterface[]): SVGElementInterface[] {
+    return shapes.sort((s1, s2) => s1.zIndex - s2.zIndex);
+}
+
 function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>) {
     const [state, setState] = useState<CanvasState>({
         shapes: [],
@@ -91,12 +95,13 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
             }
 
             if (s.type === svgType.rect || s.type === svgType.imported) {
-                return { ...s, rotation: val.rotation, width: val.width, height: val.height };
+                return { ...s, rotation: val.rotation, width: val.width, height: val.height, zIndex: val.zIndex };
             }
-            return { ...s, rotation: val.rotation, rx: val.rx, ry: val.ry };
+            return { ...s, rotation: val.rotation, rx: val.rx, ry: val.ry, zIndex: val.zIndex };
         });
+        const sortedByZIndexShapes = sortShapesByZIndex(updatedShapes);
 
-        setState({ ...state, shapes: updatedShapes });
+        setState({ ...state, shapes: sortedByZIndexShapes });
     };
 
     return {

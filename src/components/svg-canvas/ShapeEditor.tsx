@@ -1,5 +1,5 @@
 import React from "react";
-import { EllipseSVGElement, RectSVGElement, SVGElementInterface, svgType, WidthHeightSizeable } from "./SVGElement";
+import { EllipseSVGElement, SVGElementInterface, svgType, WidthHeightSizeable } from "./SVGElement";
 import styles from "./ShapeEditor.module.scss";
 
 const { shapeEditor: shapeEditorClass, editorRow: editorRowClass } = styles;
@@ -78,6 +78,16 @@ export function ShapeEditor(props: ShapeEditorProps) {
                     value={shape.rotation}
                     onChange={(event) => {
                         onUpdate({ ...shape, rotation: event.target.value || 0 });
+                    }}
+                />
+            </div>
+            <div className={editorRowClass}>
+                <label>z-index</label>
+                <input
+                    type="number"
+                    value={shape.zIndex}
+                    onChange={(event) => {
+                        onUpdate({ ...shape, zIndex: event.target.value || 0 });
                     }}
                 />
             </div>

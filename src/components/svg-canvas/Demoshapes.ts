@@ -13,7 +13,8 @@ export const demoShapes: SVGElementInterface[] = [
         position: {
             x: 0,
             y: 0
-        }
+        },
+        zIndex: 0
     } as RectSVGElement,
     {
         id: generateUUID(),
@@ -25,7 +26,8 @@ export const demoShapes: SVGElementInterface[] = [
         rotation: 25,
         rx: 100,
         ry: 100,
-        fill: "#ffff00"
+        fill: "#ffff00",
+        zIndex: 1
     } as EllipseSVGElement,
     {
         id: generateUUID(),
@@ -37,7 +39,8 @@ export const demoShapes: SVGElementInterface[] = [
         position: {
             x: 54,
             y: 287
-        }
+        },
+        zIndex: 2
     } as RectSVGElement,
     {
         id: generateUUID(),
@@ -49,7 +52,8 @@ export const demoShapes: SVGElementInterface[] = [
         position: {
             x: 179,
             y: 235
-        }
+        },
+        zIndex: 3
     } as RectSVGElement,
     {
         id: generateUUID(),
@@ -61,7 +65,8 @@ export const demoShapes: SVGElementInterface[] = [
         position: {
             x: 215,
             y: 253
-        }
+        },
+        zIndex: 4
     } as RectSVGElement,
     {
         id: generateUUID(),
@@ -73,7 +78,8 @@ export const demoShapes: SVGElementInterface[] = [
         position: {
             x: 166,
             y: 255
-        }
+        },
+        zIndex: 5
     } as RectSVGElement,
     {
         id: generateUUID(),
@@ -84,6 +90,19 @@ export const demoShapes: SVGElementInterface[] = [
         },
         svg: importedSVG.rider,
         width: 100,
-        height: 200
+        height: 200,
+        zIndex: 6
+    } as ImportedSVGElement,
+    {
+        id: generateUUID(),
+        type: svgType.imported,
+        position: {
+            x: 0,
+            y: 0
+        },
+        svg: importedSVG.qrCode,
+        width: 100,
+        height: 100,
+        zIndex: 6
     } as ImportedSVGElement
 ];

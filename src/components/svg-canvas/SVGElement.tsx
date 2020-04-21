@@ -11,8 +11,9 @@ export enum svgType {
 export interface SVGElementInterface {
     type: svgType;
     id: string;
-    fill?: string;
     position: Position;
+    fill?: string;
+    zIndex?: number;
     rotation?: number;
 }
 
