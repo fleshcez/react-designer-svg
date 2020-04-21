@@ -4,7 +4,6 @@ import { SVGCanvas } from "./svg-canvas/SVGCanvas";
 import { demoShapes } from "./svg-canvas/Demoshapes";
 import { CanvasSettings } from "./canvas-settings/CanvasSettings";
 import { Toolbox } from "./Toolbox/Toolbox";
-import { SVGElementInterface } from "./svg-canvas/SVGElement";
 
 export interface CanvasProperties {
     width: number;
@@ -34,10 +33,7 @@ export function App() {
         element.position.x = 0;
         element.position.y = 0;
 
-        setActiveShapes((prev: SVGElementInterface[]) => {
-            prev.push(element);
-            return prev;
-        });
+        setActiveShapes([...activeShapes, element]);
     };
 
     return (
