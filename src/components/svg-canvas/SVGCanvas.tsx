@@ -67,7 +67,7 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
             offset: { x: 0, y: 0 },
             snap: 1
         });
-    }, []);
+    }, [props.shapes]);
 
     const onMouseMoveHandler = function (event: MouseEvent) {
         const mouseCoords = getCanvasMouseCoords(ref, event);
