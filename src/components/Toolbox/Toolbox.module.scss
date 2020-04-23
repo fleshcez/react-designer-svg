@@ -1,15 +1,18 @@
 .toolbox {
-    position: fixed;
+    position: relative;
     display: block;
-    left: 0;
-    border: 1px solid;
-    top: 0;
-    bottom: 0;
+    border: 1px solid #000000;
     padding: 10px;
+    height: 100%;
+
+    .list {
+        list-style: none;
+    }
 
     .listElement {
         padding: 10px;
         font-size: 14px;
         cursor: pointer;
+        border-bottom: 1px solid #686868;
     }
 }

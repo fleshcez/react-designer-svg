@@ -4,6 +4,7 @@ import { SVGCanvas } from "./svg-canvas/SVGCanvas";
 import { demoShapes } from "./svg-canvas/Demoshapes";
 import { CanvasSettings } from "./canvas-settings/CanvasSettings";
 import { Toolbox } from "./Toolbox/Toolbox";
+import { CreateNewObject } from "./utils/createNewObject";
 
 export interface CanvasProperties {
     width: number;
@@ -25,15 +26,9 @@ export function App() {
         });
     };
 
-    const onElementClick = (id: string) => {
-        if (id === null) {
-            return;
-        }
-        const element = demoShapes.find((s) => s.id === id);
-        element.position.x = 0;
-        element.position.y = 0;
-
-        setActiveShapes([...activeShapes, element]);
+    const onElementClick = (type: string, svg: string) => {
+        const newObject = CreateNewObject(type, svg);
+        setActiveShapes([...activeShapes, newObject]);
     };
 
     return (
