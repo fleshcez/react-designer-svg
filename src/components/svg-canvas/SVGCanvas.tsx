@@ -60,14 +60,14 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
 
     useEffect(() => {
         setState({
-            shapes: props.shapes,
+            shapes: [...state.shapes, ...props.shapes.filter((p) => !state.shapes.find((s) => s.id === p.id))],
             hoveredOnShapeShapeId: null,
             selectedShapeId: null,
             lastMouseCoords: { x: 0, y: 0 },
             offset: { x: 0, y: 0 },
             snap: 1
         });
-    }, []);
+    }, [props.shapes]);
 
     const onMouseMoveHandler = function (event: MouseEvent) {
         const mouseCoords = getCanvasMouseCoords(ref, event);

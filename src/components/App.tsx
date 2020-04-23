@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import "./App.css";
 import { SVGCanvas } from "./svg-canvas/SVGCanvas";
-import { demoShapes } from "./svg-canvas/Demoshapes";
 import { CanvasSettings } from "./canvas-settings/CanvasSettings";
+import { Toolbox } from "./Toolbox/Toolbox";
+import { CreateNewObject } from "./utils/createNewObject";
 
 export interface CanvasProperties {
     width: number;
@@ -10,6 +11,7 @@ export interface CanvasProperties {
 }
 export function App() {
     const [canvasDimensions, setCanvasDimensions] = useState({ width: 500, height: 400 });
+    const [activeShapes, setActiveShapes] = useState([]);
 
     const updateCanvasWidth = (width: number) => {
         setCanvasDimensions((prev) => {
@@ -23,14 +25,20 @@ export function App() {
         });
     };
 
+    const onElementClick = (type: string, svg: string) => {
+        const newObject = CreateNewObject(type, svg);
+        setActiveShapes([...activeShapes, newObject]);
+    };
+
     return (
         <div className="app">
+            <Toolbox onElementClick={onElementClick} />
             <CanvasSettings
                 updateCanvasWidth={updateCanvasWidth}
                 updateCanvasHeight={updateCanvasHeight}
                 currentDimensions={canvasDimensions}
             />
-            <SVGCanvas width={canvasDimensions.width} height={canvasDimensions.height} shapes={demoShapes} />
+            <SVGCanvas width={canvasDimensions.width} height={canvasDimensions.height} shapes={activeShapes} />
         </div>
     );
 }
