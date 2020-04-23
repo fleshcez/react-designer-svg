@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
 import { SVGCanvas } from "./svg-canvas/SVGCanvas";
-import { demoShapes } from "./svg-canvas/Demoshapes";
 import { CanvasSettings } from "./canvas-settings/CanvasSettings";
 import { Toolbox } from "./Toolbox/Toolbox";
 import { CreateNewObject } from "./utils/createNewObject";
@@ -33,7 +32,7 @@ export function App() {
 
     return (
         <div className="app">
-            <Toolbox shapes={demoShapes} onElementClick={onElementClick} />
+            <Toolbox onElementClick={onElementClick} />
             <CanvasSettings
                 updateCanvasWidth={updateCanvasWidth}
                 updateCanvasHeight={updateCanvasHeight}

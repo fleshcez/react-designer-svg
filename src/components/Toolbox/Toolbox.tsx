@@ -1,10 +1,9 @@
 import React from "react";
 import styles from "./Toolbox.module.scss";
-import { SVGElementInterface, svgType } from "../svg-canvas/SVGElement";
+import { svgType } from "../svg-canvas/SVGElement";
 import { importedSVG } from "../utils/SVGImporter";
 
 interface ToolboxProps {
-    shapes: SVGElementInterface[];
     onElementClick(type: string, svg: string);
 }
 const { toolbox: toolBoxClass, listElement: listElementClass, list: listClass } = styles;
