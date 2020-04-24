@@ -13,6 +13,7 @@ interface SVGCanvasProps {
     height: number;
     className?: string;
     shapes?: SVGElementInterface[];
+    onMouseDropCoordsChange: (coors: Position) => void;
 }
 
 interface SVGCanvasState {
@@ -199,7 +200,11 @@ export function SVGCanvas(props: SVGCanvasProps) {
                 viewBox={`0 0 ${width} ${height}`}
                 className={cls}
                 ref={ref}
-                onMouseUp={() => setState({ ...state, hoveredOnShapeShapeId: null, offset: { x: 0, y: 0 } })}
+                onMouseUp={(event) => {
+                    const coords = getCanvasMouseCoords(ref, event);
+                    props.onMouseDropCoordsChange(coords);
+                    setState({ ...state, hoveredOnShapeShapeId: null, offset: { x: 0, y: 0 } });
+                }}
                 onClick={() => setState({ ...state, selectedShapeId: null })}
                 onMouseMove={(event) => {
                     onMouseMoveHandler(event);
