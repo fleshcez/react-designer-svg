@@ -1,5 +1,5 @@
 .canvasSettings {
-    width: 180px;
+    box-sizing: border-box;
     border: 1px solid #000000;
     text-align: center;
     padding: 10px;
@@ -21,6 +21,10 @@
         label,
         div {
             display: block;
+        }
+
+        input {
+            width: 80%;
         }
     }
 }
