@@ -5,6 +5,7 @@ import clsx from "clsx";
 
 import styles from "./SVGCanvas.module.scss";
 import { ShapeEditor } from "./ShapeEditor";
+import { CanvasSettings } from "../canvas-settings/CanvasSettings";
 
 const { canvas: canvasClass } = styles;
 
@@ -14,6 +15,8 @@ interface SVGCanvasProps {
     className?: string;
     shapes?: SVGElementInterface[];
     onMouseDropCoordsChange: (coors: Position) => void;
+    updateCanvasWidth: (width: number) => void;
+    updateCanvasHeight: (width: number) => void;
 }
 
 interface SVGCanvasState {
@@ -193,6 +196,11 @@ export function SVGCanvas(props: SVGCanvasProps) {
                         }}
                     />
                 )}
+                <CanvasSettings
+                    updateCanvasWidth={props.updateCanvasWidth}
+                    updateCanvasHeight={props.updateCanvasHeight}
+                    currentDimensions={{ width, height }}
+                />
             </div>
             <svg
                 width={`${width}px`}

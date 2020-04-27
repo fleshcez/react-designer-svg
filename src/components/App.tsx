@@ -63,11 +63,6 @@ export function App() {
     return (
         <DragDropContext onDragEnd={(result: DropResult) => onDragEnd(result)}>
             <div className="app">
-                <CanvasSettings
-                    updateCanvasWidth={updateCanvasWidth}
-                    updateCanvasHeight={updateCanvasHeight}
-                    currentDimensions={canvasDimensions}
-                />
                 <Droppable droppableId="canvas" renderClone={getClone()}>
                     {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
                         <div ref={provided.innerRef} style={{ position: "relative", display: "flex", height: "100%" }}>
@@ -77,6 +72,8 @@ export function App() {
                                 height={canvasDimensions.height}
                                 shapes={activeShapes}
                                 onMouseDropCoordsChange={setCanvasMouseCoords}
+                                updateCanvasWidth={updateCanvasWidth}
+                                updateCanvasHeight={updateCanvasHeight}
                             />
                             {provided.placeholder}
                         </div>
