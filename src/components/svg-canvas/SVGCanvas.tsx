@@ -1,5 +1,5 @@
 import React, { MouseEvent, MutableRefObject, useEffect, useRef, useState } from "react";
-import { SVGElement, SVGElementInterface, svgType } from "./SVGElement";
+import { EllipseSVGElement, SVGElement, SVGElementInterface, svgType } from "./SVGElement";
 import { Position } from "./common";
 import clsx from "clsx";
 
@@ -34,7 +34,10 @@ function getCanvasMouseCoords(canvasRef: MutableRefObject<HTMLElement>, event: M
 
     return { x: mouseInCanvasX, y: mouseInCanvasY };
 }
-
+enum ShapeMode {
+    move = "MOVE",
+    edit = "EDIT"
+}
 interface CanvasState {
     shapes: SVGElementInterface[];
     hoveredOnShapeShapeId: string;
@@ -42,6 +45,7 @@ interface CanvasState {
     lastMouseCoords: Position;
     offset: { x: number; y: number };
     snap: number;
+    mode: ShapeMode;
 }
 
 function sortShapesByZIndex(shapes: SVGElementInterface[]): SVGElementInterface[] {
@@ -55,7 +59,8 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
         selectedShapeId: null,
         lastMouseCoords: { x: 0, y: 0 },
         offset: { x: 0, y: 0 },
-        snap: 1
+        snap: 1,
+        mode: ShapeMode.move
     });
 
     useEffect(() => {
@@ -65,7 +70,8 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
             selectedShapeId: null,
             lastMouseCoords: { x: 0, y: 0 },
             offset: { x: 0, y: 0 },
-            snap: 1
+            snap: 1,
+            mode: ShapeMode.move
         });
     }, [props.shapes]);
 
@@ -104,7 +110,28 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
                 offset.y = offset.y % snap;
             }
 
-            return { ...s, position: { x: newX, y: newY } };
+            if (state.mode == ShapeMode.move) {
+                return { ...s, position: { x: newX, y: newY } };
+            }
+
+            if (mouseCoords === state.lastMouseCoords) {
+                return;
+            }
+
+            if (s.type === svgType.ellipse) {
+                const ellipse = s as EllipseSVGElement;
+                const width = 2 * ellipse.rx + newX - s.position.x;
+                const height = 2 * ellipse.ry + newY - s.position.y;
+                ellipse.rx = Math.abs(width) / 2;
+                ellipse.ry = Math.abs(height) / 2;
+                return { ...ellipse };
+            } else {
+                const width = s.width + newX - s.position.x;
+                const height = s.height + newY - s.position.y;
+                s.width = Math.abs(width);
+                s.height = Math.abs(height);
+                return { ...s };
+            }
         });
 
         setState({
@@ -145,6 +172,36 @@ const PrettyPrintJson = (props: { data }) => (
     </div>
 );
 
+function getSelectedShapeInfo(selectedShape: SVGElementInterface) {
+    if (selectedShape === null) {
+        return {
+            width: 0,
+            height: 0,
+            rotation: 0,
+            positionX: 0,
+            positionY: 0
+        };
+    }
+
+    if (selectedShape.type === svgType.ellipse) {
+        const ellipse = selectedShape as EllipseSVGElement;
+        return {
+            width: 2 * ellipse.rx,
+            height: 2 * ellipse.ry,
+            rotation: ellipse.rotation,
+            positionX: ellipse.position.x - ellipse.rx,
+            positionY: ellipse.position.y - ellipse.ry
+        };
+    }
+    return {
+        width: selectedShape.width,
+        height: selectedShape.height,
+        rotation: selectedShape.rotation,
+        positionX: selectedShape.position.x,
+        positionY: selectedShape.position.y
+    };
+}
+
 export function SVGCanvas(props: SVGCanvasProps) {
     const { width, height, className } = props;
     const cls = clsx([className, canvasClass]);
@@ -157,7 +214,7 @@ export function SVGCanvas(props: SVGCanvasProps) {
             key={s.id}
             element={s}
             onMouseClickCallback={(id: string) => {
-                setState({ ...state, selectedShapeId: id });
+                setState({ ...state, selectedShapeId: id, mode: ShapeMode.move });
             }}
             onMouseDownCallback={(event: MouseEvent, id) => {
                 setState({ ...state, hoveredOnShapeShapeId: id });
@@ -166,7 +223,7 @@ export function SVGCanvas(props: SVGCanvasProps) {
     ));
 
     const selectedShape = state.selectedShapeId && state.shapes.find((s) => s.id === state.selectedShapeId);
-
+    const selecteShapeInfo = getSelectedShapeInfo(selectedShape);
     return (
         <>
             <div style={{ width: "180px" }}>
@@ -206,6 +263,78 @@ export function SVGCanvas(props: SVGCanvasProps) {
                 }}
             >
                 {svgs}
+                <g
+                    transform={`translate(${selecteShapeInfo.positionX} ${selecteShapeInfo.positionY}) rotate(${
+                        selecteShapeInfo.rotation
+                    } ${selecteShapeInfo.width / 2} ${selecteShapeInfo.height / 2})`}
+                    onMouseDown={() => {
+                        setState({ ...state, hoveredOnShapeShapeId: selectedShape.id, mode: ShapeMode.edit });
+                    }}
+                    onMouseUp={() =>
+                        setState({
+                            ...state,
+                            hoveredOnShapeShapeId: null,
+                            offset: { x: 0, y: 0 },
+                            mode: ShapeMode.move
+                        })
+                    }
+                >
+                    <line
+                        x1="0"
+                        y1="0"
+                        x2={selecteShapeInfo.width}
+                        y2="0"
+                        stroke="#808080"
+                        strokeWidth="3"
+                        strokeDasharray="5,5"
+                    />
+                    <line
+                        x1="0"
+                        y1={selecteShapeInfo.height}
+                        x2={selecteShapeInfo.width}
+                        y2={selecteShapeInfo.height}
+                        stroke="#808080"
+                        strokeWidth="3"
+                        strokeDasharray="5,5"
+                    />
+                    <line
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2={selecteShapeInfo.height}
+                        stroke="#808080"
+                        strokeWidth="3"
+                        strokeDasharray="5,5"
+                    />
+                    <line
+                        x1={selecteShapeInfo.width}
+                        y1="0"
+                        x2={selecteShapeInfo.width}
+                        y2={selecteShapeInfo.height}
+                        stroke="#808080"
+                        strokeWidth="3"
+                        strokeDasharray="5,5"
+                    />
+                    <circle cx="0" cy="0" r="3" stroke="#0000FF" strokeWidth="1" fill="#CCCCFF" />
+                    <circle
+                        cx={selecteShapeInfo.width}
+                        cy="0"
+                        r="3"
+                        stroke="#0000FF"
+                        strokeWidth="1"
+                        fill="#CCCCFF"
+                        onMouseMove={(event) => onMouseMoveHandler(event)}
+                    />
+                    <circle cx="0" cy={selecteShapeInfo.height} r="3" stroke="#0000FF" strokeWidth="1" fill="#CCCCFF" />
+                    <circle
+                        cx={selecteShapeInfo.width}
+                        cy={selecteShapeInfo.height}
+                        r="3"
+                        stroke="#0000FF"
+                        strokeWidth="1"
+                        fill="#CCCCFF"
+                    />
+                </g>
             </svg>
             <div style={{ height: "500px", width: "400px", overflow: "auto", background: "white", marginLeft: "10px" }}>
                 <PrettyPrintJson data={state} />

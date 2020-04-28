@@ -47,7 +47,8 @@ export function CreateNewObject(type: string, svg: string) {
                     svg: importedSVG.rider,
                     width: 100,
                     height: 200,
-                    zIndex: 6
+                    zIndex: 6,
+                    rotation: 0
                 } as ImportedSVGElement;
             } else if (svg === importedSVG.qrCode) {
                 return {
@@ -60,7 +61,8 @@ export function CreateNewObject(type: string, svg: string) {
                     svg: importedSVG.qrCode,
                     width: 100,
                     height: 200,
-                    zIndex: 6
+                    zIndex: 6,
+                    rotation: 0
                 } as ImportedSVGElement;
             }
     }

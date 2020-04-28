@@ -8,7 +8,7 @@ export enum svgType {
     imported = "imported"
 }
 
-export interface SVGElementInterface {
+export interface SVGElementInterface extends WidthHeightSizeable {
     type: svgType;
     id: string;
     position: Position;
@@ -74,7 +74,6 @@ export function SVGElement(props: SVGElementProps) {
                     width={width}
                     height={height}
                     fill={fill}
-                    stroke={"rgb(0,0,0)"}
                     strokeWidth={strokeWidth}
                     onMouseEnter={() => setShowDragable(true)}
                     onMouseLeave={() => setShowDragable(false)}
@@ -118,7 +117,6 @@ export function SVGElement(props: SVGElementProps) {
 
             return (
                 <g
-                    stroke={"rgb(0,0,0)"}
                     strokeWidth={strokeWidth}
                     onMouseEnter={() => setShowDragable(true)}
                     onMouseLeave={() => setShowDragable(false)}
