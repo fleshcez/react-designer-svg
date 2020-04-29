@@ -5,12 +5,11 @@ import RotationArrow from "../../assets/replay.svg";
 interface ShapeResizerProps {
     selectedShape: SVGElementInterface;
     onMouseDownCallback: () => void;
-    onMouseUpCallback: () => void;
     onMouseMove: (event) => void;
     onMouseDownRotate: () => void;
 }
 
-function useSelecteShape(shape: SVGElementInterface) {
+function useSelectedShape(shape: SVGElementInterface) {
     if (shape === null) {
         return {
             width: 0,
@@ -40,18 +39,14 @@ function useSelecteShape(shape: SVGElementInterface) {
 }
 
 const ShapeResizer: FunctionComponent<ShapeResizerProps> = (props: ShapeResizerProps) => {
-    const { selectedShape, onMouseDownCallback, onMouseUpCallback, onMouseMove, onMouseDownRotate } = props;
-    const { width, height, rotation, positionX, positionY } = useSelecteShape(selectedShape);
+    const { selectedShape, onMouseDownCallback, onMouseMove, onMouseDownRotate } = props;
+    const { width, height, rotation, positionX, positionY } = useSelectedShape(selectedShape);
     return (
-        <g
-            transform={`translate(${positionX} ${positionY}) rotate(${rotation} ${width / 2} ${height / 2})`}
-            onMouseUp={() => onMouseUpCallback()}
-        >
+        <g transform={`translate(${positionX} ${positionY}) rotate(${rotation} ${width / 2} ${height / 2})`}>
             <line x1="0" y1="0" x2={width} y2="0" stroke="#808080" strokeWidth="3" strokeDasharray="5,5" />
             <line x1="0" y1={height} x2={width} y2={height} stroke="#808080" strokeWidth="3" strokeDasharray="5,5" />
             <line x1="0" y1="0" x2="0" y2={height} stroke="#808080" strokeWidth="3" strokeDasharray="5,5" />
             <line x1={width} y1="0" x2={width} y2={height} stroke="#808080" strokeWidth="3" strokeDasharray="5,5" />
-            <circle cx="0" cy="0" r="3" stroke="#0000FF" strokeWidth="3" fill="#CCCCFF" />
             <circle
                 cx={width}
                 cy="0"
@@ -64,7 +59,6 @@ const ShapeResizer: FunctionComponent<ShapeResizerProps> = (props: ShapeResizerP
                     onMouseDownCallback();
                 }}
             />
-            <circle cx="0" cy={height} r="3" stroke="#0000FF" strokeWidth="3" fill="#CCCCFF" />
             <circle
                 cx={width}
                 cy={height}
@@ -83,7 +77,6 @@ const ShapeResizer: FunctionComponent<ShapeResizerProps> = (props: ShapeResizerP
                     height="20px"
                     onMouseDown={() => onMouseDownRotate()}
                     onMouseMove={(event) => onMouseMove(event)}
-                    onMouseUp={() => onMouseUpCallback()}
                     x={width + 5}
                     y="0px"
                     href={RotationArrow}
