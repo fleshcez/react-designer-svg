@@ -5,6 +5,7 @@ import clsx from "clsx";
 
 import styles from "./SVGCanvas.module.scss";
 import { ShapeEditor } from "./ShapeEditor";
+import { CanvasSettings } from "../canvas-settings/CanvasSettings";
 import ShapeResizer from "./ShapeResizer";
 
 const { canvas: canvasClass } = styles;
@@ -14,6 +15,9 @@ interface SVGCanvasProps {
     height: number;
     className?: string;
     shapes?: SVGElementInterface[];
+    onMouseDropCoordsChange: (coors: Position) => void;
+    updateCanvasWidth: (width: number) => void;
+    updateCanvasHeight: (width: number) => void;
 }
 
 interface SVGCanvasState {
@@ -206,6 +210,7 @@ export function SVGCanvas(props: SVGCanvasProps) {
     ));
 
     const selectedShape = state.selectedShapeId && state.shapes.find((s) => s.id === state.selectedShapeId);
+
     return (
         <>
             <div style={{ width: "180px" }}>
@@ -231,6 +236,11 @@ export function SVGCanvas(props: SVGCanvasProps) {
                         }}
                     />
                 )}
+                <CanvasSettings
+                    updateCanvasWidth={props.updateCanvasWidth}
+                    updateCanvasHeight={props.updateCanvasHeight}
+                    currentDimensions={{ width, height }}
+                />
             </div>
             <svg
                 width={`${width}px`}
@@ -238,7 +248,11 @@ export function SVGCanvas(props: SVGCanvasProps) {
                 viewBox={`0 0 ${width} ${height}`}
                 className={cls}
                 ref={ref}
-                onMouseUp={() => setState({ ...state, hoveredOnShapeShapeId: null, offset: { x: 0, y: 0 } })}
+                onMouseUp={(event) => {
+                    const coords = getCanvasMouseCoords(ref, event);
+                    props.onMouseDropCoordsChange(coords);
+                    setState({ ...state, hoveredOnShapeShapeId: null, offset: { x: 0, y: 0 } });
+                }}
                 onClick={() => setState({ ...state, selectedShapeId: null })}
                 onMouseMove={(event) => {
                     onMouseMoveHandler(event);
