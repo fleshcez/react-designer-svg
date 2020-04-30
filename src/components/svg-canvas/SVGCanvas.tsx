@@ -1,11 +1,12 @@
 import React, { MouseEvent, MutableRefObject, useEffect, useRef, useState } from "react";
-import { SVGElement, SVGElementInterface, SvgType } from "./SVGElement";
+import { EllipseSVGElement, SVGElement, SVGElementInterface, SvgType } from "./SVGElement";
 import { Position } from "./common";
 import clsx from "clsx";
 
 import styles from "./SVGCanvas.module.scss";
 import { ShapeEditor } from "./ShapeEditor";
 import { CanvasSettings } from "../canvas-settings/CanvasSettings";
+import ShapeResizer from "./ShapeResizer";
 import { DropTarget } from "../utils/DragAndDrop/DropTarget";
 
 const { canvas: canvasClass } = styles;
@@ -39,7 +40,11 @@ function getCanvasMouseCoords(canvasRef: MutableRefObject<HTMLElement>, event: M
 
     return { x: mouseInCanvasX, y: mouseInCanvasY };
 }
-
+enum ShapeMode {
+    move = "MOVE",
+    edit = "EDIT",
+    rotate = "ROTATE"
+}
 interface CanvasState {
     shapes: SVGElementInterface[];
     hoveredOnShapeShapeId: string;
@@ -47,6 +52,7 @@ interface CanvasState {
     lastMouseCoords: Position;
     offset: { x: number; y: number };
     snap: number;
+    mode: ShapeMode;
 }
 
 function sortShapesByZIndex(shapes: SVGElementInterface[]): SVGElementInterface[] {
@@ -60,7 +66,8 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
         selectedShapeId: null,
         lastMouseCoords: { x: 0, y: 0 },
         offset: { x: 0, y: 0 },
-        snap: 1
+        snap: 1,
+        mode: ShapeMode.move
     });
 
     useEffect(() => {
@@ -70,9 +77,50 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
             selectedShapeId: null,
             lastMouseCoords: { x: 0, y: 0 },
             offset: { x: 0, y: 0 },
-            snap: 1
+            snap: 1,
+            mode: ShapeMode.move
         });
     }, [props.shapes]);
+
+    const updateShape = (
+        shape: SVGElementInterface,
+        newX: number,
+        newY: number,
+        mouseCoords: Position
+    ): SVGElementInterface => {
+        switch (state.mode) {
+            case ShapeMode.move:
+                return { ...shape, position: { x: newX, y: newY } };
+            case ShapeMode.edit:
+                if (mouseCoords === state.lastMouseCoords) {
+                    return;
+                }
+
+                if (shape.type === SvgType.ellipse) {
+                    const ellipse = shape as EllipseSVGElement;
+                    const width = 2 * ellipse.rx + newX - shape.position.x;
+                    const height = 2 * ellipse.ry + newY - shape.position.y;
+                    ellipse.rx = Math.abs(width) / 2;
+                    ellipse.ry = Math.abs(height) / 2;
+                    return { ...ellipse };
+                } else {
+                    const width = shape.width + newX - shape.position.x;
+                    const height = shape.height + newY - shape.position.y;
+                    shape.width = Math.abs(width);
+                    shape.height = Math.abs(height);
+                    return { ...shape };
+                }
+            case ShapeMode.rotate:
+                const angle = Math.atan2(
+                    shape.position.x + (shape.width || 0) / 2 - mouseCoords.x,
+                    shape.position.y + (shape.height || 0) / 2 - mouseCoords.y
+                );
+
+                const angleDeg = (angle * 180) / Math.PI;
+                shape.rotation = (angleDeg + 45) * -1;
+                return { ...shape };
+        }
+    };
 
     const onMouseMoveHandler = function (event: MouseEvent) {
         const mouseCoords = getCanvasMouseCoords(ref, event);
@@ -109,7 +157,8 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
                 offset.y = offset.y % snap;
             }
 
-            return { ...s, position: { x: newX, y: newY } };
+            const newShape = updateShape(s, newX, newY, mouseCoords);
+            return { ...newShape };
         });
 
         setState({
@@ -162,7 +211,7 @@ export function SVGCanvas(props: SVGCanvasProps) {
             key={s.id}
             element={s}
             onMouseClickCallback={(id: string) => {
-                setState({ ...state, selectedShapeId: id });
+                setState({ ...state, selectedShapeId: id, mode: ShapeMode.move });
             }}
             onMouseDownCallback={(event: MouseEvent, id) => {
                 setState({ ...state, hoveredOnShapeShapeId: id });
@@ -218,7 +267,12 @@ export function SVGCanvas(props: SVGCanvasProps) {
                         onMouseUp={(event) => {
                             const coords = getCanvasMouseCoords(ref, event);
                             props.onMouseDropCoordsChange(coords);
-                            setState({ ...state, hoveredOnShapeShapeId: null, offset: { x: 0, y: 0 } });
+                            setState({
+                                ...state,
+                                hoveredOnShapeShapeId: null,
+                                offset: { x: 0, y: 0 },
+                                mode: ShapeMode.move
+                            });
                         }}
                         onClick={() => setState({ ...state, selectedShapeId: null })}
                         onMouseMove={(event) => {
@@ -226,6 +280,26 @@ export function SVGCanvas(props: SVGCanvasProps) {
                         }}
                     >
                         {svgs}
+                        {selectedShape && (
+                            <ShapeResizer
+                                selectedShape={selectedShape}
+                                onMouseDownCallback={() => {
+                                    setState({
+                                        ...state,
+                                        hoveredOnShapeShapeId: selectedShape.id,
+                                        mode: ShapeMode.edit
+                                    });
+                                }}
+                                onMouseMove={(event) => onMouseMoveHandler(event)}
+                                onMouseDownRotate={() => {
+                                    setState({
+                                        ...state,
+                                        hoveredOnShapeShapeId: selectedShape.id,
+                                        mode: ShapeMode.rotate
+                                    });
+                                }}
+                            />
+                        )}
                     </svg>
                 )}
             </DropTarget>
