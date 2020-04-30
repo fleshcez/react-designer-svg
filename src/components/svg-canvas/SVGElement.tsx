@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Position } from "./common";
 import { importedSVG, SVGImporter } from "../utils/SVGImporter";
 
-export enum svgType {
+export enum SvgType {
     rect = "rect",
     ellipse = "ellipse",
     imported = "imported"
 }
 
 export interface SVGElementInterface extends WidthHeightSizeable {
-    type: svgType;
+    type: SvgType;
     id: string;
     position: Position;
     fill?: string;
@@ -23,17 +23,17 @@ export interface WidthHeightSizeable {
 }
 
 export interface RectSVGElement extends SVGElementInterface, WidthHeightSizeable {
-    type: svgType.rect;
+    type: SvgType.rect;
 }
 
 export interface EllipseSVGElement extends SVGElementInterface {
-    type: svgType.ellipse;
+    type: SvgType.ellipse;
     rx: number;
     ry: number;
 }
 
 export interface ImportedSVGElement extends SVGElementInterface, WidthHeightSizeable {
-    type: svgType.imported;
+    type: SvgType.imported;
     svg: importedSVG;
 }
 
@@ -67,7 +67,7 @@ export function SVGElement(props: SVGElementProps) {
     const { strokeWidth, setShowDragable } = useSVGElement();
 
     switch (type) {
-        case svgType.rect: {
+        case SvgType.rect: {
             const { width, height } = props.element as RectSVGElement;
             return (
                 <rect
@@ -89,7 +89,7 @@ export function SVGElement(props: SVGElementProps) {
             );
         }
 
-        case svgType.ellipse: {
+        case SvgType.ellipse: {
             const { rx, ry } = props.element as EllipseSVGElement;
             return (
                 <ellipse
@@ -112,7 +112,7 @@ export function SVGElement(props: SVGElementProps) {
             );
         }
 
-        case svgType.imported: {
+        case SvgType.imported: {
             const { width, height, svg } = props.element as ImportedSVGElement;
 
             return (

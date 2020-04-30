@@ -1,66 +1,72 @@
-import { EllipseSVGElement, ImportedSVGElement, RectSVGElement, svgType } from "../svg-canvas/SVGElement";
+import { EllipseSVGElement, ImportedSVGElement, RectSVGElement, SvgType } from "../svg-canvas/SVGElement";
 import { generateUUID } from "./uuid";
 import { importedSVG } from "./SVGImporter";
+import { ElementPosition } from "./DragAndDrop/Dnd.hooks";
+import { ToolboxItem } from "../Toolbox/Toolbox.model";
 
-export function CreateNewObject(type: string, svg: string) {
+export function createNewObject(payload: ToolboxItem, { left, top }: ElementPosition) {
+    const { type, svg } = payload;
     if (type === null) {
         return;
     }
     switch (type) {
-        case svgType.rect:
+        case SvgType.rect:
             return {
                 id: generateUUID(),
-                type: svgType.rect,
-                width: 450,
-                height: 450,
+                type: SvgType.rect,
+                width: 100,
+                height: 100,
                 fill: "#40dcff",
                 rotation: 0,
                 position: {
-                    x: 0,
-                    y: 0
+                    x: left,
+                    y: top
                 },
                 zIndex: 0
             } as RectSVGElement;
-        case svgType.ellipse:
+        case SvgType.ellipse:
+            const radius = {
+                rx: 50,
+                ry: 50
+            };
             return {
                 id: generateUUID(),
-                type: svgType.ellipse,
+                type: SvgType.ellipse,
                 position: {
-                    x: 206,
-                    y: 120
+                    x: left + radius.rx,
+                    y: top + radius.ry
                 },
                 rotation: 25,
-                rx: 100,
-                ry: 100,
                 fill: "#ffff00",
-                zIndex: 1
+                zIndex: 0,
+                ...radius
             } as EllipseSVGElement;
-        case svgType.imported:
+        case SvgType.imported:
             if (svg === importedSVG.rider) {
                 return {
                     id: generateUUID(),
-                    type: svgType.imported,
+                    type: SvgType.imported,
                     position: {
-                        x: 149,
-                        y: 91
+                        x: left,
+                        y: top
                     },
                     svg: importedSVG.rider,
                     width: 100,
-                    height: 200,
+                    height: 100,
                     zIndex: 6,
                     rotation: 0
                 } as ImportedSVGElement;
             } else if (svg === importedSVG.qrCode) {
                 return {
                     id: generateUUID(),
-                    type: svgType.imported,
+                    type: SvgType.imported,
                     position: {
-                        x: 149,
-                        y: 91
+                        x: left,
+                        y: top
                     },
                     svg: importedSVG.qrCode,
                     width: 100,
-                    height: 200,
+                    height: 100,
                     zIndex: 6,
                     rotation: 0
                 } as ImportedSVGElement;

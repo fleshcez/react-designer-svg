@@ -1,5 +1,5 @@
 import React, { MouseEvent, MutableRefObject, useEffect, useRef, useState } from "react";
-import { EllipseSVGElement, SVGElement, SVGElementInterface, svgType } from "./SVGElement";
+import { EllipseSVGElement, SVGElement, SVGElementInterface, SvgType } from "./SVGElement";
 import { Position } from "./common";
 import clsx from "clsx";
 
@@ -7,6 +7,7 @@ import styles from "./SVGCanvas.module.scss";
 import { ShapeEditor } from "./ShapeEditor";
 import { CanvasSettings } from "../canvas-settings/CanvasSettings";
 import ShapeResizer from "./ShapeResizer";
+import { DropTarget } from "../utils/DragAndDrop/DropTarget";
 
 const { canvas: canvasClass } = styles;
 
@@ -95,7 +96,7 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
                     return;
                 }
 
-                if (shape.type === svgType.ellipse) {
+                if (shape.type === SvgType.ellipse) {
                     const ellipse = shape as EllipseSVGElement;
                     const width = 2 * ellipse.rx + newX - shape.position.x;
                     const height = 2 * ellipse.ry + newY - shape.position.y;
@@ -174,7 +175,7 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
                 return s;
             }
 
-            if (s.type === svgType.rect || s.type === svgType.imported) {
+            if (s.type === SvgType.rect || s.type === SvgType.imported) {
                 return { ...s, rotation: val.rotation, width: val.width, height: val.height, zIndex: val.zIndex };
             }
             return { ...s, rotation: val.rotation, rx: val.rx, ry: val.ry, zIndex: val.zIndex };
@@ -251,36 +252,57 @@ export function SVGCanvas(props: SVGCanvasProps) {
                     currentDimensions={{ width, height }}
                 />
             </div>
-            <svg
-                width={`${width}px`}
-                height={`${height}px`}
-                viewBox={`0 0 ${width} ${height}`}
-                className={cls}
-                ref={ref}
-                onMouseUp={(event) => {
-                    const coords = getCanvasMouseCoords(ref, event);
-                    props.onMouseDropCoordsChange(coords);
-                    setState({ ...state, hoveredOnShapeShapeId: null, offset: { x: 0, y: 0 }, mode: ShapeMode.move });
-                }}
-                onClick={() => setState({ ...state, selectedShapeId: null })}
-                onMouseMove={(event) => {
-                    onMouseMoveHandler(event);
-                }}
-            >
-                {svgs}
-                {selectedShape && (
-                    <ShapeResizer
-                        selectedShape={selectedShape}
-                        onMouseDownCallback={() => {
-                            setState({ ...state, hoveredOnShapeShapeId: selectedShape.id, mode: ShapeMode.edit });
+            <DropTarget>
+                {(provided) => (
+                    <svg
+                        width={`${width}px`}
+                        height={`${height}px`}
+                        viewBox={`0 0 ${width} ${height}`}
+                        className={cls}
+                        ref={(r) => {
+                            provided.getElementRef(r);
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            ref.current = r as any;
                         }}
-                        onMouseMove={(event) => onMouseMoveHandler(event)}
-                        onMouseDownRotate={() => {
-                            setState({ ...state, hoveredOnShapeShapeId: selectedShape.id, mode: ShapeMode.rotate });
+                        onMouseUp={(event) => {
+                            const coords = getCanvasMouseCoords(ref, event);
+                            props.onMouseDropCoordsChange(coords);
+                            setState({
+                                ...state,
+                                hoveredOnShapeShapeId: null,
+                                offset: { x: 0, y: 0 },
+                                mode: ShapeMode.move
+                            });
                         }}
-                    />
+                        onClick={() => setState({ ...state, selectedShapeId: null })}
+                        onMouseMove={(event) => {
+                            onMouseMoveHandler(event);
+                        }}
+                    >
+                        {svgs}
+                        {selectedShape && (
+                            <ShapeResizer
+                                selectedShape={selectedShape}
+                                onMouseDownCallback={() => {
+                                    setState({
+                                        ...state,
+                                        hoveredOnShapeShapeId: selectedShape.id,
+                                        mode: ShapeMode.edit
+                                    });
+                                }}
+                                onMouseMove={(event) => onMouseMoveHandler(event)}
+                                onMouseDownRotate={() => {
+                                    setState({
+                                        ...state,
+                                        hoveredOnShapeShapeId: selectedShape.id,
+                                        mode: ShapeMode.rotate
+                                    });
+                                }}
+                            />
+                        )}
+                    </svg>
                 )}
-            </svg>
+            </DropTarget>
             <div style={{ height: "500px", width: "400px", overflow: "auto", background: "white", marginLeft: "10px" }}>
                 <PrettyPrintJson data={state} />
             </div>

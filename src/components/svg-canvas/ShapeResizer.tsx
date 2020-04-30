@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { EllipseSVGElement, SVGElementInterface, svgType } from "./SVGElement";
+import { EllipseSVGElement, SVGElementInterface, SvgType } from "./SVGElement";
 import RotationArrow from "../../assets/replay.svg";
 
 interface ShapeResizerProps {
@@ -19,7 +19,7 @@ function useSelectedShape(shape: SVGElementInterface) {
             positionY: 0
         };
     }
-    if (shape.type === svgType.ellipse) {
+    if (shape.type === SvgType.ellipse) {
         const ellipse = shape as EllipseSVGElement;
         return {
             width: 2 * ellipse.rx,
