@@ -268,16 +268,18 @@ export function SVGCanvas(props: SVGCanvasProps) {
                 }}
             >
                 {svgs}
-                <ShapeResizer
-                    selectedShape={selectedShape}
-                    onMouseDownCallback={() => {
-                        setState({ ...state, hoveredOnShapeShapeId: selectedShape.id, mode: ShapeMode.edit });
-                    }}
-                    onMouseMove={(event) => onMouseMoveHandler(event)}
-                    onMouseDownRotate={() => {
-                        setState({ ...state, hoveredOnShapeShapeId: selectedShape.id, mode: ShapeMode.rotate });
-                    }}
-                />
+                {selectedShape && (
+                    <ShapeResizer
+                        selectedShape={selectedShape}
+                        onMouseDownCallback={() => {
+                            setState({ ...state, hoveredOnShapeShapeId: selectedShape.id, mode: ShapeMode.edit });
+                        }}
+                        onMouseMove={(event) => onMouseMoveHandler(event)}
+                        onMouseDownRotate={() => {
+                            setState({ ...state, hoveredOnShapeShapeId: selectedShape.id, mode: ShapeMode.rotate });
+                        }}
+                    />
+                )}
             </svg>
             <div style={{ height: "500px", width: "400px", overflow: "auto", background: "white", marginLeft: "10px" }}>
                 <PrettyPrintJson data={state} />
