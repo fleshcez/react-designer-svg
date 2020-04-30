@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { fromEvent } from "rxjs";
-import { filter, map, switchMap, takeUntil, finalize } from "rxjs/operators";
+import { filter, map, switchMap, takeUntil, finalize, tap } from "rxjs/operators";
 
 export interface DragOptions {
     dragSourceElement: HTMLElement;
@@ -31,12 +31,7 @@ export interface DragSnapshot {
 
 export function useDrag({ dragSourceElement, onDragEnd }: DragOptions) {
     const [snapshot, setSnapshot] = useState<DragSnapshot>();
-    const snapshotRef = useRef<DragSnapshot>();
 
-    function updateSnapshot(newSnapshot: DragSnapshot) {
-        setSnapshot(newSnapshot);
-        snapshotRef.current = newSnapshot;
-    }
     useEffect(() => {
         if (!dragSourceElement) {
             return;
@@ -57,6 +52,7 @@ export function useDrag({ dragSourceElement, onDragEnd }: DragOptions) {
                     x: mouse.clientX,
                     y: mouse.clientY
                 };
+                let currentSnapshot = null;
                 return mouseMove.pipe(
                     map((mouse: MouseEvent) => {
                         return {
@@ -72,21 +68,22 @@ export function useDrag({ dragSourceElement, onDragEnd }: DragOptions) {
                             }
                         };
                     }),
+                    tap((dragSnapshot) => (currentSnapshot = dragSnapshot)),
                     takeUntil(mouseUp),
                     finalize(() => {
                         try {
-                            onDragEnd(snapshotRef.current?.model);
+                            onDragEnd(currentSnapshot);
                         } catch (e) {
                             console.warn("failed to perform  drag end", e);
                         }
-                        updateSnapshot({ isDragging: false });
+                        setSnapshot({ isDragging: false });
                     })
                 );
             })
         );
 
         const onDraggingSub = dragAndDrop.subscribe((newSnapshot) => {
-            updateSnapshot({ model: newSnapshot, isDragging: true });
+            setSnapshot({ model: newSnapshot, isDragging: true });
         });
 
         return () => {
