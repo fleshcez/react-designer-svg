@@ -1,5 +1,5 @@
 import React from "react";
-import { EllipseSVGElement, SVGElementInterface, svgType, WidthHeightSizeable } from "./SVGElement";
+import { EllipseSVGElement, SVGElementInterface, SvgType, WidthHeightSizeable } from "./SVGElement";
 import styles from "./ShapeEditor.module.scss";
 
 const { shapeEditor: shapeEditorClass, editorRow: editorRowClass } = styles;
@@ -13,7 +13,7 @@ export function ShapeEditor(props: ShapeEditorProps) {
     const { shape, onUpdate } = props;
     let dimensions;
 
-    if (shape.type === svgType.rect || shape.type === svgType.imported) {
+    if (shape.type === SvgType.rect || shape.type === SvgType.imported) {
         const castShape = (shape as unknown) as WidthHeightSizeable;
 
         dimensions = (
