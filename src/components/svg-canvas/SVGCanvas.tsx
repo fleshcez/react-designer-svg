@@ -1,5 +1,5 @@
 import React, { MouseEvent, MutableRefObject, useEffect, useRef, useState } from "react";
-import { SVGElement, SVGElementInterface, svgType } from "./SVGElement";
+import { SVGElement, SVGElementInterface, SvgType } from "./SVGElement";
 import { Position } from "./common";
 import clsx from "clsx";
 
@@ -126,7 +126,7 @@ function useSVGCanvas(props: SVGCanvasProps, ref: MutableRefObject<HTMLElement>)
                 return s;
             }
 
-            if (s.type === svgType.rect || s.type === svgType.imported) {
+            if (s.type === SvgType.rect || s.type === SvgType.imported) {
                 return { ...s, rotation: val.rotation, width: val.width, height: val.height, zIndex: val.zIndex };
             }
             return { ...s, rotation: val.rotation, rx: val.rx, ry: val.ry, zIndex: val.zIndex };

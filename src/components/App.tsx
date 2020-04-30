@@ -2,16 +2,14 @@ import React, { useState } from "react";
 import "./App.css";
 import { SVGCanvas } from "./svg-canvas/SVGCanvas";
 import { Toolbox } from "./Toolbox/Toolbox";
-import { CreateNewObject } from "./utils/createNewObject";
+import { createNewObject } from "./utils/createNewObject";
 import { DndContext } from "./utils/DragAndDrop/DndContext";
+import { ElementPosition } from "./utils/DragAndDrop/Dnd.hooks";
+import { ToolboxItem } from "./Toolbox/Toolbox.model";
 
 export interface CanvasProperties {
     width: number;
     height: number;
-}
-
-function onDragendFn(props) {
-    console.log(props);
 }
 
 export function App() {
@@ -30,45 +28,22 @@ export function App() {
         });
     };
 
-    const onElementClick = (type: string, svg: string) => {
-        const newObject = CreateNewObject(type, svg);
+    const addNewShape = (toolboxItem: ToolboxItem, position: ElementPosition) => {
+        const newObject = createNewObject(toolboxItem, position);
         setActiveShapes([...activeShapes, newObject]);
     };
 
-    // const onDragEnd = (result: DropResult) => {
-    //     if (!result.destination) return;
-    //     const id = result.draggableId;
-    //     const item = items.find((p) => p.id === id);
-    //     const newItem = CreateNewObject(item.type, item.svg);
-    //     newItem.position.x = canvasMouseCoords.x;
-    //     newItem.position.y = canvasMouseCoords.y;
-    //     setActiveShapes([...activeShapes, newItem]);
-    // };
-
-    // const getClone = () => (provided, snapshot) => {
-    //     return (
-    //         <React.Fragment>
-    //             <div
-    //                 {...provided.draggableProps}
-    //                 {...provided.dragHandleProps}
-    //                 ref={provided.innerRef}
-    //                 style={{
-    //                     border: "1px dashed #000000",
-    //                     width: "300px",
-    //                     height: "200px",
-    //                     ...provided.draggableProps.style
-    //                 }}
-    //                 className={snapshot.isDragging ? "dragging" : ""}
-    //             />
-    //         </React.Fragment>
-    //     );
-    // };
-
     return (
-        <DndContext onDragEnd={onDragendFn}>
+        <DndContext
+            onDrop={(result) => {
+                console.log("drop", result);
+                const payload = result.payload as ToolboxItem;
+                addNewShape(payload, result.dropPosition);
+            }}
+        >
             <div className="app">
                 <div style={{ position: "relative", display: "flex", height: "100%", width: "100vw" }}>
-                    <Toolbox onElementClick={onElementClick} />
+                    <Toolbox onElementClick={(item) => addNewShape(item, { left: 0, top: 0 })} />
 
                     <SVGCanvas
                         width={canvasDimensions.width}

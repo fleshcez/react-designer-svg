@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo, useContext } from "react";
+import React, { ReactNode, useContext } from "react";
 import { dndContextImpl } from "./DndContext";
 
 export interface DragTargetProps {
@@ -11,6 +11,6 @@ export interface DragTargetProvided {
 
 export function DropTarget({ children }: DragTargetProps) {
     const ctx = useContext(dndContextImpl);
-    const target = useMemo(() => children({ getElementRef: ctx.updateDropTarget }), []);
+    const target = children({ getElementRef: ctx.updateDropTarget });
     return <>{target}</>;
 }

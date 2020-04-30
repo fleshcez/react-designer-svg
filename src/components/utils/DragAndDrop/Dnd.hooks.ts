@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fromEvent } from "rxjs";
-import { filter, map, switchMap, takeUntil, withLatestFrom } from "rxjs/operators";
+import { filter, map, switchMap, takeUntil, finalize } from "rxjs/operators";
 
 export interface DragOptions {
     dragSourceElement: HTMLElement;
@@ -21,6 +21,7 @@ export interface DragModel {
     initialElementPosition: ElementPosition;
     initialMousePosition: MousePosition;
     deltaMouse: MousePosition;
+    currentMouse: MousePosition;
 }
 
 export interface DragSnapshot {
@@ -29,7 +30,13 @@ export interface DragSnapshot {
 }
 
 export function useDrag({ dragSourceElement, onDragEnd }: DragOptions) {
-    const [dragging, setDragging] = useState<DragSnapshot>();
+    const [snapshot, setSnapshot] = useState<DragSnapshot>();
+    const snapshotRef = useRef<DragSnapshot>();
+
+    function updateSnapshot(newSnapshot: DragSnapshot) {
+        setSnapshot(newSnapshot);
+        snapshotRef.current = newSnapshot;
+    }
     useEffect(() => {
         if (!dragSourceElement) {
             return;
@@ -55,39 +62,47 @@ export function useDrag({ dragSourceElement, onDragEnd }: DragOptions) {
                         return {
                             initialElementPosition,
                             initialMousePosition,
+                            currentMouse: {
+                                x: mouse.clientX,
+                                y: mouse.clientY
+                            },
                             deltaMouse: {
                                 x: mouse.clientX - initialMousePosition.x,
                                 y: mouse.clientY - initialMousePosition.y
                             }
                         };
                     }),
-                    takeUntil(mouseUp)
+                    takeUntil(mouseUp),
+                    finalize(() => {
+                        try {
+                            onDragEnd(snapshotRef.current?.model);
+                        } catch (e) {
+                            console.warn("failed to perform  drag end", e);
+                        }
+                        updateSnapshot({ isDragging: false });
+                    })
                 );
             })
         );
+        //
+        // const onDragEndSub = mouseUp.pipe(withLatestFrom(dragAndDrop)).subscribe(([, snapshot]) => {
+        //     setSnapshot({
+        //         isDragging: false
+        //     });
+        //     onDragEnd(snapshot);
+        // });
 
-        const onDropSub = mouseUp.pipe(withLatestFrom(dragAndDrop)).subscribe(([, snapshot]) => {
-            setDragging({
-                isDragging: false
-            });
-            onDragEnd(snapshot);
-        });
-
-        const onDraggingSub = dragAndDrop.subscribe((snapshot) => {
-            console.log("dragging", snapshot);
-            setDragging({
-                isDragging: true,
-                model: snapshot
-            });
+        const onDraggingSub = dragAndDrop.subscribe((newSnapshot) => {
+            updateSnapshot({ model: newSnapshot, isDragging: true });
         });
 
         return () => {
-            onDropSub.unsubscribe();
+            // onDragEndSub.unsubscribe();
             onDraggingSub.unsubscribe();
         };
     }, [dragSourceElement]);
 
     return {
-        dragging
+        snapshot
     };
 }

@@ -1,42 +1,32 @@
 import React, { useMemo, CSSProperties } from "react";
 import style from "./DragPlaceholder.module.scss";
-import { DragSnapshot } from "../Dnd.hooks";
+import { DndDragModel } from "../DndContext";
 
 const { root } = style;
 
 export interface DragPlaceholderProps {
-    dragModel: DragSnapshot;
+    dragModel: DndDragModel;
 }
 
 export function DragPlaceholder({ dragModel }: DragPlaceholderProps) {
+    const { snapshot, placeholderInitialPosition } = dragModel || {};
+
     const translation: CSSProperties = useMemo(() => {
-        if (!dragModel?.isDragging) {
+        if (!snapshot?.isDragging) {
             return null;
         }
-        const initialElementPosition = dragModel.model.initialElementPosition;
-        const initialMousePosition = dragModel.model.initialMousePosition;
-        const delta = dragModel.model.deltaMouse;
-        const offsetX = initialMousePosition.x - initialElementPosition.left;
-        const offsetY = initialMousePosition.y - initialElementPosition.top;
-        const adjustX = offsetX - 50;
-        const adjustY = offsetY - 25;
-        const left = initialElementPosition.left + adjustX;
-        const top = initialElementPosition.top + adjustY;
-
+        const { deltaMouse: delta } = snapshot.model;
+        const { left, top } = placeholderInitialPosition;
         return {
             left: `${left}px`,
             top: `${top}px`,
             transform: `translate(${delta.x}px,${delta.y}px)`
         } as CSSProperties;
-    }, [dragModel]);
+    }, [snapshot, placeholderInitialPosition]);
 
-    if (!dragModel?.isDragging) {
+    if (!snapshot?.isDragging) {
         return null;
     }
 
-    return (
-        <div className={root} style={translation}>
-            HELLO
-        </div>
-    );
+    return <div className={root} style={translation} />;
 }
