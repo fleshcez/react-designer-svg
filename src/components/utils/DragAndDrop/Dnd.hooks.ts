@@ -84,20 +84,12 @@ export function useDrag({ dragSourceElement, onDragEnd }: DragOptions) {
                 );
             })
         );
-        //
-        // const onDragEndSub = mouseUp.pipe(withLatestFrom(dragAndDrop)).subscribe(([, snapshot]) => {
-        //     setSnapshot({
-        //         isDragging: false
-        //     });
-        //     onDragEnd(snapshot);
-        // });
 
         const onDraggingSub = dragAndDrop.subscribe((newSnapshot) => {
             updateSnapshot({ model: newSnapshot, isDragging: true });
         });
 
         return () => {
-            // onDragEndSub.unsubscribe();
             onDraggingSub.unsubscribe();
         };
     }, [dragSourceElement]);
