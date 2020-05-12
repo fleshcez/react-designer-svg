@@ -1,0 +1,15 @@
+export const oidcConfiguration = {
+    authority: "https://preprodidentity.accessacloud.com",
+    automaticSilentRenew: true,
+    client_id: "access.wdk.dashboard",
+    loadUserInfo: false,
+    monitorSession: false,
+    // redirect_uri: "http://localhost:3000/authentication/callback",
+    redirect_uri: "http://localhost/dashboard/callback.html",
+    response_type: "id_token token",
+    scope: "openid profile email policy access.widget.discovery access.widget.api",
+    silentRequestTimeout: 10000,
+    post_logout_redirect_uri: "http://localhost:3000/",
+    silent_redirect_uri: "http://localhost:3000/authentication/silent_callback",
+    //userStore: new Oidc.WebStorageStateStore({ prefix: "dashboard:", store: window.sessionStorage }),
+};

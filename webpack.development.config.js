@@ -7,6 +7,7 @@ module.exports = {
     entry: "./src/index.tsx",
 
     output: {
+        publicPath: "/",
         filename: "main.js",
         path: path.resolve(__dirname, "dist")
     },
@@ -62,8 +63,11 @@ module.exports = {
     devtool: "source-map",
 
     devServer: {
-        port: 3001,
-        open: true
+        open: true,
+        port: 80,
+        historyApiFallback: {
+            disableDotRule: true
+        }
     },
 
     plugins: [

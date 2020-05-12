@@ -60,12 +60,15 @@
         "yargs": "^15.3.1"
     },
     "dependencies": {
+        "@axa-fr/react-oidc-context": "^3.0.9-alpha.0",
         "@types/react-beautiful-dnd": "^12.1.2",
         "axios": "^0.19.2",
         "moment": "^2.24.0",
+        "oidc-client": "^1.10.1",
         "react": "^16.13.0",
         "react-beautiful-dnd": "^13.0.0",
         "react-dom": "^16.13.0",
+        "react-router-dom": "^5.1.2",
         "rxjs": "^6.5.5"
     }
 }
